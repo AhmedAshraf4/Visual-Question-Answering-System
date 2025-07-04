@@ -55,12 +55,11 @@ We used the **VizWiz dataset**, which contains real-world questions and answers 
 ---
 
 ## 📊 Results
-```
+
 | Metric                | Training | Validation | Test     |
 |-----------------------|----------|------------|----------|
 | Accuracy (overall)    | ~82%    | ~33%      | ~55%    |
 | Answer Accuracy       | ~80%    | ~0%       | ~40%    |
 | Answer Type Accuracy  | ~85%    | ~67%      | ~85%    |
-```
 
 
