@@ -120,27 +120,33 @@ The split is **stratified by** `answer_type`.
 
 ### Architecture
 
-flowchart TD
-  A[Image] --> B[CLIP Image Encoder (frozen)]
-  Q[Question Text] --> C[CLIP Text Encoder (frozen)]
-  B --> D[Concat: img_emb ⊕ txt_emb]
-  C --> D
+```mermaid
+flowchart TB
+  %% Inputs
+  I([Image]) --> CI[CLIP Image Encoder<br/>(frozen)]
+  Q([Question]) --> CT[CLIP Text Encoder<br/>(frozen)]
 
-  D --> E[Shared MLP Trunk<br/>LayerNorm → Dropout → Linear(→512) → LayerNorm → Dropout]
+  %% Fusion
+  CI --> F[Concat<br/>img_emb ⊕ txt_emb]
+  CT --> F
 
-  E --> F[Answer Head<br/>Linear(512→|V|)]
-  E --> G[Answer-Type Head<br/>Linear(512→4)]
+  %% Shared trunk
+  F --> T[Shared Trunk (MLP)<br/>LayerNorm → Dropout → Linear(→512) → LayerNorm → Dropout]
 
-  G --> H[Gate Mapper<br/>Linear(4→|V|) + Sigmoid]
-  F --> I[Elementwise Gate<br/>Answer logits ⊙ gate]
-  H --> I
+  %% Heads
+  T --> A[Answer Head<br/>Linear(512 → |V|)]
+  T --> Y[Answer-Type Head<br/>Linear(512 → 4)]
 
-  I --> J[Predicted Answer]
-  G --> K[Predicted Answer Type]
+  %% Gating
+  Y --> G[Gate Mapper<br/>Linear(4 → |V|) + Sigmoid]
+  A --> M[Elementwise Gate<br/>Answer logits ⊙ gate]
+  G --> M
 
+  %% Outputs
+  M --> OA([Predicted Answer])
+  Y --> OT([Predicted Answer Type])
+```
 This encourages the auxiliary head to provide a coarse “prior” over the answer space.
-
----
 
 ## Training
 
@@ -272,7 +278,3 @@ Open `VQA.ipynb` and run cells in order:
 - OpenAI CLIP model and community implementations
 
 
-```mermaid
-flowchart TB
-  A[Start] --> B[End]
-```
