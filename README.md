@@ -119,24 +119,24 @@ The split is **stratified by** `answer_type`.
 ## Model
 
 ### Architecture
-A compact multi-task neural network predicts both the answer and the answer type:
 
-- Shared trunk:
-  - `LayerNorm(input_size)`
-  - `Dropout(0.5)`
-  - `Linear(input_size → 512)`
-  - `LayerNorm(512)`
-  - `Dropout(0.5)`
+flowchart TD
+  A[Image] --> B[CLIP Image Encoder (frozen)]
+  Q[Question Text] --> C[CLIP Text Encoder (frozen)]
+  B --> D[Concat: img_emb ⊕ txt_emb]
+  C --> D
 
-- Two prediction heads:
-  1. **Answer head:** `Linear(512 → num_classes)`
-  2. **Answer-type head:** `Linear(512 → num_answer_types)`
+  D --> E[Shared MLP Trunk<br/>LayerNorm → Dropout → Linear(→512) → LayerNorm → Dropout]
 
-- **Gated fusion**:
-  - Map answer-type logits into the answer space via a linear layer + sigmoid gate
-  - Element-wise gate the answer logits:
-    - `gate = sigmoid(Linear(answer_type_logits))`
-    - `final_answer_logits = answer_logits * gate`
+  E --> F[Answer Head<br/>Linear(512→|V|)]
+  E --> G[Answer-Type Head<br/>Linear(512→4)]
+
+  G --> H[Gate Mapper<br/>Linear(4→|V|) + Sigmoid]
+  F --> I[Elementwise Gate<br/>Answer logits ⊙ gate]
+  H --> I
+
+  I --> J[Predicted Answer]
+  G --> K[Predicted Answer Type]
 
 This encourages the auxiliary head to provide a coarse “prior” over the answer space.
 
