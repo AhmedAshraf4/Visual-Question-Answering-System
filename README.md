@@ -270,3 +270,9 @@ Open `VQA.ipynb` and run cells in order:
 
 - VizWiz dataset creators and annotators
 - OpenAI CLIP model and community implementations
+
+
+```mermaid
+flowchart TB
+  A[Start] --> B[End]
+```
