@@ -123,25 +123,26 @@ The split is **stratified by** `answer_type`.
 ```mermaid
 flowchart TB
 
-  I([Image]) --> CI[CLIP Image Encoder (frozen)]
-  Q([Question]) --> CT[CLIP Text Encoder (frozen)]
+  I[Image] --> CI[CLIP Image Encoder frozen]
+  Q[Question] --> CT[CLIP Text Encoder frozen]
 
   CI --> F[Concatenate image and text embeddings]
   CT --> F
 
-  F --> T[Shared MLP Trunk: LayerNorm - Dropout - Linear(512) - LayerNorm - Dropout]
+  F --> T[Shared MLP Trunk]
 
-  T --> A[Answer Head: Linear(512 to V)]
-  T --> Y[Answer-Type Head: Linear(512 to 4)]
+  T --> A[Answer Head Linear 512 to V]
+  T --> Y[Answer Type Head Linear 512 to 4]
 
-  Y --> G[Gate Mapper: Linear(4 to V) + Sigmoid]
-  A --> M[Elementwise Gate (Answer logits * Gate)]
+  Y --> G[Gate Mapper Linear 4 to V with Sigmoid]
+  A --> M[Elementwise Gating]
   G --> M
 
-  M --> OA([Predicted Answer])
-  Y --> OT([Predicted Answer Type])
+  M --> OA[Predicted Answer]
+  Y --> OT[Predicted Answer Type]
 
 ```
+
 
 This encourages the auxiliary head to provide a coarse “prior” over the answer space.
 
