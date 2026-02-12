@@ -65,8 +65,6 @@ Key dataset stats observed in the notebook:
 - **# Answer classes:** 5,247 unique answers  
 - **# Answer types:** 4
 
-<details>
-<summary><b>EDA plots</b> (click to expand)</summary>
 
 ### Most common questions
 ![Top questions](assets/eda_top_questions.png)
@@ -79,8 +77,6 @@ Key dataset stats observed in the notebook:
 
 ### Answerable distribution
 ![Answerable](assets/eda_answerable.png)
-
-</details>
 
 ---
 
@@ -123,28 +119,32 @@ The split is **stratified by** `answer_type`.
 ## Model
 
 ### Architecture
-A compact multi-task neural network predicts both the answer and the answer type:
 
-- Shared trunk:
-  - `LayerNorm(input_size)`
-  - `Dropout(0.5)`
-  - `Linear(input_size → 512)`
-  - `LayerNorm(512)`
-  - `Dropout(0.5)`
+```mermaid
+flowchart TB
 
-- Two prediction heads:
-  1. **Answer head:** `Linear(512 → num_classes)`
-  2. **Answer-type head:** `Linear(512 → num_answer_types)`
+  I[Image] --> CI[CLIP Image Encoder frozen]
+  Q[Question] --> CT[CLIP Text Encoder frozen]
 
-- **Gated fusion**:
-  - Map answer-type logits into the answer space via a linear layer + sigmoid gate
-  - Element-wise gate the answer logits:
-    - `gate = sigmoid(Linear(answer_type_logits))`
-    - `final_answer_logits = answer_logits * gate`
+  CI --> F[Concatenate image and text embeddings]
+  CT --> F
+
+  F --> T[Shared MLP Trunk]
+
+  T --> A[Answer Head Linear 512 to V]
+  T --> Y[Answer Type Head Linear 512 to 4]
+
+  Y --> G[Gate Mapper Linear 4 to V with Sigmoid]
+  A --> M[Elementwise Gating]
+  G --> M
+
+  M --> OA[Predicted Answer]
+  Y --> OT[Predicted Answer Type]
+
+```
+
 
 This encourages the auxiliary head to provide a coarse “prior” over the answer space.
-
----
 
 ## Training
 
@@ -182,14 +182,11 @@ The notebook demonstrates inference on three external images/questions:
 - Train image + *"what is the type of this vehicle?"* → **train**
 - Grapes image + *"what is this?"* → **grapes**
 
-<details>
-<summary><b>Example images</b> (click to expand)</summary>
 
 ![Baseball](assets/example_baseball_pitcher.png)  
 ![Train](assets/example_train.png)  
 ![Grapes](assets/example_grapes.png)
 
-</details>
 
 ---
 
@@ -277,3 +274,5 @@ Open `VQA.ipynb` and run cells in order:
 
 - VizWiz dataset creators and annotators
 - OpenAI CLIP model and community implementations
+
+
