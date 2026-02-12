@@ -65,8 +65,6 @@ Key dataset stats observed in the notebook:
 - **# Answer classes:** 5,247 unique answers  
 - **# Answer types:** 4
 
-<details>
-<summary><b>EDA plots</b> (click to expand)</summary>
 
 ### Most common questions
 ![Top questions](assets/eda_top_questions.png)
@@ -79,8 +77,6 @@ Key dataset stats observed in the notebook:
 
 ### Answerable distribution
 ![Answerable](assets/eda_answerable.png)
-
-</details>
 
 ---
 
@@ -182,14 +178,11 @@ The notebook demonstrates inference on three external images/questions:
 - Train image + *"what is the type of this vehicle?"* → **train**
 - Grapes image + *"what is this?"* → **grapes**
 
-<details>
-<summary><b>Example images</b> (click to expand)</summary>
 
 ![Baseball](assets/example_baseball_pitcher.png)  
 ![Train](assets/example_train.png)  
 ![Grapes](assets/example_grapes.png)
 
-</details>
 
 ---
 
